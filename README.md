@@ -201,5 +201,5 @@ docker exec -it cassandra1 cqlsh -e "SELECT * FROM turbine_data.readings LIMIT 5
 
 <p align="center">
   <b>Réalisé par Aymane & Bozian</b><br>
-  <i>Projet NoSQL — Module Cassandra</i>
+  <i>Projet NoSQL — Redis-Cassandra</i>
 </p>
