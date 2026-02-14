@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  cassandra1:
+    image: cassandra:4.1
+    container_name: cassandra1
+    ports:
+      - "9042:9042"
+    environment:
+      - CASSANDRA_CLUSTER_NAME=TurbineCluster
+      - CASSANDRA_DC=datacenter1
+      - CASSANDRA_RACK=rack1
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+    networks:
+      - nosql-network
+    volumes:
+      - cassandra1_data:/var/lib/cassandra
+
+  cassandra2:
+    image: cassandra:4.1
+    container_name: cassandra2
+    depends_on:
+      - cassandra1
+    environment:
+      - CASSANDRA_CLUSTER_NAME=TurbineCluster
+      - CASSANDRA_DC=datacenter1
+      - CASSANDRA_RACK=rack1
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - CASSANDRA_SEEDS=cassandra1
+    networks:
+      - nosql-network
+    volumes:
+      - cassandra2_data:/var/lib/cassandra
+
+  cassandra3:
+    image: cassandra:4.1
+    container_name: cassandra3
+    depends_on:
+      - cassandra1
+    environment:
+      - CASSANDRA_CLUSTER_NAME=TurbineCluster
+      - CASSANDRA_DC=datacenter1
+      - CASSANDRA_RACK=rack1
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - CASSANDRA_SEEDS=cassandra1
+    networks:
+      - nosql-network
+    volumes:
+      - cassandra3_data:/var/lib/cassandra
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - nosql-network
+
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+    networks:
+      - nosql-network
+
+networks:
+  nosql-network:
+    driver: bridge
+
+volumes:
+  cassandra1_data:
+  cassandra2_data:
+  cassandra3_data:
+
+

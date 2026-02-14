@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turbine IoT Dashboard — Monitoring en Temps Réel</title>
+    <meta name="description" content="Dashboard de monitoring en temps réel pour les turbines éoliennes IoT. Visualisation des données de vent, puissance et énergie via Cassandra.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <!-- ========== SIDEBAR ========== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i data-lucide="wind" class="icon-wind"></i>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-title">TurbineIoT</span>
+                    <span class="logo-subtitle">Dashboard</span>
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" data-page="overview" id="nav-overview">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Vue d'ensemble</span>
+            </a>
+            <a href="#" class="nav-item" data-page="T101" id="nav-T101">
+                <i data-lucide="wind"></i>
+                <span>Turbine T101</span>
+            </a>
+            <a href="#" class="nav-item" data-page="T102" id="nav-T102">
+                <i data-lucide="wind"></i>
+                <span>Turbine T102</span>
+            </a>
+            <a href="#" class="nav-item" data-page="T103" id="nav-T103">
+                <i data-lucide="wind"></i>
+                <span>Turbine T103</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="cluster-status" id="cluster-status">
+                <div class="status-dot disconnected"></div>
+                <span>Cluster: Déconnecté</span>
+            </div>
+            <div class="sidebar-credits">
+                <span>Projet NoSQL — Cassandra</span>
+                <span class="credits-authors">Aymane & Bozian</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu">
+                <i data-lucide="menu"></i>
+            </button>
+            <div class="topbar-title">
+                <h1 id="page-title">Vue d'ensemble</h1>
+                <p id="page-subtitle">Monitoring en temps réel des turbines éoliennes</p>
+            </div>
+            <div class="topbar-actions">
+                <div class="last-update" id="last-update">
+                    <i data-lucide="clock" class="icon-sm"></i>
+                    <span>—</span>
+                </div>
+                <button class="btn-refresh" id="btn-refresh" title="Rafraîchir">
+                    <i data-lucide="refresh-cw"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- ========== OVERVIEW PAGE ========== -->
+        <section class="page active" id="page-overview">
+            <!-- Global KPI Row -->
+            <div class="kpi-row" id="global-kpi-row">
+                <!-- Filled by JS -->
+            </div>
+
+            <!-- Turbine Cards -->
+            <div class="section-header">
+                <h2>Performance par Turbine</h2>
+                <span class="badge">3 turbines actives</span>
+            </div>
+
+            <div class="turbine-cards" id="turbine-cards">
+                <!-- Filled by JS -->
+            </div>
+
+            <!-- Overview Charts -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3><i data-lucide="wind" class="icon-sm"></i> Vitesse du Vent — Comparaison</h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="chart-wind-compare"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3><i data-lucide="zap" class="icon-sm"></i> Puissance — Comparaison</h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="chart-power-compare"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== TURBINE DETAIL PAGE ========== -->
+        <section class="page" id="page-turbine-detail">
+            <div class="turbine-detail-header" id="turbine-detail-header">
+                <!-- Filled by JS -->
+            </div>
+
+            <div class="kpi-row" id="detail-kpi-row">
+                <!-- Filled by JS -->
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card full-width">
+                    <div class="chart-header">
+                        <h3><i data-lucide="activity" class="icon-sm"></i> Vitesse du Vent (m/s)</h3>
+                    </div>
+                    <div class="chart-body chart-body-lg">
+                        <canvas id="chart-detail-wind"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3><i data-lucide="zap" class="icon-sm"></i> Puissance (kW)</h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="chart-detail-power"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3><i data-lucide="battery-charging" class="icon-sm"></i> Énergie Exportée (kWh)</h3>
+                    </div>
+                    <div class="chart-body">
+                        <canvas id="chart-detail-energy"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Readings Table -->
+            <div class="table-card">
+                <div class="chart-header">
+                    <h3><i data-lucide="table" class="icon-sm"></i> Dernières Lectures</h3>
+                </div>
+                <div class="table-wrap">
+                    <table id="readings-table">
+                        <thead>
+                            <tr>
+                                <th>Horodatage</th>
+                                <th>Vent (m/s)</th>
+                                <th>Puissance (kW)</th>
+                                <th>Énergie (kWh)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="readings-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== LOADING OVERLAY ========== -->
+        <div class="loading-overlay" id="loading-overlay">
+            <div class="spinner"></div>
+            <p>Chargement des données...</p>
+        </div>
+    </main>
+
+    <script src="/static/dashboard.js"></script>
+</body>
+</html>

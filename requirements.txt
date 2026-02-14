@@ -1,0 +1,7 @@
+cassandra-driver
+redis
+paho-mqtt
+numpy>=1.26.0
+pyasyncore
+flask
+flask-cors
